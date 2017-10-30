@@ -5,6 +5,9 @@ const eslint = require('gulp-eslint');
 const mocha = require('gulp-mocha');
 const plumber = require('gulp-plumber');
 const env = require('gulp-env');
+const runSequence = require('run-sequence').use(gulp);
+
+const { execFileSync } = require('child_process');
 
 const srcrDir = './src';
 const testDir = './test';
@@ -55,10 +58,38 @@ gulp.task('mocha', () => {
             },
             timeout: 2000,
         }))
-        .on('error', gutil.log)
-        .on('end', () => {
-            process.exit(0);
-        });
+        .on('error', gutil.log);
+});
+
+gulp.task('pre-integration', () => {
+    console.log('==========================================> RUNNING PRE_INTEGRATION TASKS');
+    const child = execFileSync('./test/docker/pre-integration.sh', [], { stdio: 'inherit' }, (error, stdout, stderr) => {
+        if (error) {
+            throw error;
+        }
+        console.log(stdout);
+    });
+});
+
+gulp.task('post-integration', () => {
+    console.log('==========================================> RUNNING POST_INTEGRATION TASKS');
+    const child = execFileSync('./test/docker/post-integration.sh', [], { stdio: 'inherit' }, (error, stdout, stderr) => {
+        if (error) {
+            throw error;
+        }
+        console.log(stdout);
+    });
+});
+
+gulp.task('docker-test', (callback) => {
+  runSequence('pre-integration',
+              'mocha',
+              'post-integration',
+              'end-it');
+});
+
+gulp.task('end-it', () => {
+    process.exit(0);
 });
 
 gulp.task('nodemon', () => {
