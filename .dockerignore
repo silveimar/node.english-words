@@ -1,0 +1,12 @@
+node_modules/
+npm-debug.log
+test/report/*
+temp/
+tmp/*
+npm-debug.log
+.env
+test/coverage/
+.scannerwork/
+sonar-project.properties
+documents/
+.npm

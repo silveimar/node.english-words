@@ -4,6 +4,7 @@ const nodemon = require('gulp-nodemon');
 const eslint = require('gulp-eslint');
 const mocha = require('gulp-mocha');
 const plumber = require('gulp-plumber');
+const env = require('gulp-env');
 
 const srcrDir = './src';
 const testDir = './test';

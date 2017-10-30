@@ -1,0 +1,12 @@
+version: '3'
+services:
+    englishwords-service:
+        container_name: node.english-words
+        image: node.english-words
+        ports:
+            - 3200:3000
+        entrypoint: /www/node.english-words/wait-for-it.sh redis-words:6379 -t 120 -- gulp mocha
+networks:
+    default:
+        external:
+            name: docker_english-words

@@ -5,6 +5,7 @@ module.exports.get = key => {
     return new Promise(function(resolve, reject) {
         client.getAsync(key)
         .then((data) => {
+            console.log('=================>',data);
             if(data){
                 resolve(data);
             }

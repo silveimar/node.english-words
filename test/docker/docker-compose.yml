@@ -1,0 +1,20 @@
+version: '3'
+services:
+    redissrv:
+        container_name: redis-words
+        image: redis
+        ports:
+            - "32110:6379"
+        networks:
+            - english-words-network
+    wait:
+        container_name: wait
+        image: waisbrot/wait
+        links:
+            - redissrv
+        environment:
+            - TARGETS=redissrv:6379
+        networks:
+            - english-words-network
+networks:
+    english-words-network:
