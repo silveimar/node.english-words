@@ -9,14 +9,7 @@ module.exports.getRandomWord = () =>
         console.log('=====================> getting key', randomKey);
         redis.get(randomKey)
             .then((response) => {
-                console.log('=====================> RESPONSE from redis', response);
-                if (response && response !== null) {
-                    resolve(response);
-                } else {
-                    const error = new Error(`Could not find the word for key ${randomKey}`);
-                    console.log('=====================> REJECTING', error);
-                    reject(error);
-                }
+                resolve(response);
             })
             .catch((err) => {
                 reject(err);

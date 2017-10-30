@@ -11,21 +11,35 @@ const testDir = './test';
 const paths = {
     SRC: ['server.js', 'gulpfile.js', `${srcrDir}/**/*.js`, `${srcrDir}/**/**/*.js`],
     SRC_COVERAGE: [`${srcrDir}/controllers/*.js`, `${srcrDir}/services/*.js`],
-    TEST: `${testDir}/mocha/**/**/*.js`,
+    TEST: [`${testDir}/mocha/*.test.js`],
+};
+
+const esLintOptions = {
+    useEslintrc: true,
+    fix: true,
 };
 
 gulp.task('lint-src', () =>
+
     (gulp.src(paths.SRC)
-        .pipe(eslint())
+        .pipe(eslint(esLintOptions))
         .pipe(eslint.format())
         .pipe(eslint.failAfterError())
+        .once('error', (err) => {
+            gutil.log(err.toString());
+            process.exit(1);
+        })
     ));
 
 gulp.task('lint-test', () =>
     (gulp.src(paths.TEST)
-        .pipe(eslint())
+        .pipe(eslint(esLintOptions))
         .pipe(eslint.format())
         .pipe(eslint.failAfterError())
+        .once('error', (err) => {
+            gutil.log(err.toString());
+            process.exit(2);
+        })
     ));
 
 gulp.task('mocha', () => {
@@ -35,28 +49,15 @@ gulp.task('mocha', () => {
             reporter: 'mocha-jenkins-reporter',
             reporterOptions: {
                 junit_report_name: 'Random english word Tests',
-                junit_report_path: 'tests/report/report.xml',
+                junit_report_path: 'test/report/report.xml',
                 junit_report_stack: '1',
             },
-            timeout: 7000,
+            timeout: 2000,
         }))
-        .once('error', (err) => {
-            console.log('ERROR!!!!');
-            gutil.log(err.toString());
-            process.exit(1);
-        })
-        .once('end', () => {
-            console.log('TERMINANDO!!!!');
+        .on('error', gutil.log)
+        .on('end', () => {
             process.exit(0);
         });
-});
-
-gulp.task('watch-test', () => {
-  gulp.watch(path.TEST, ['mocha']);
-});
-
-gulp.task('watch', () => {
-    gulp.watch([paths.SRC], ['lint']);
 });
 
 gulp.task('nodemon', () => {
